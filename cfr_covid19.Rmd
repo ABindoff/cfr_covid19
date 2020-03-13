@@ -7,30 +7,17 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-```
-
----
-title: "Crude CFR"
-author: "Bindoff, A."
-date: "13/03/2020"
-output: 
-  html_document:
-    code_folding: 'show'
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 
 ```
 
-The case fatality rate (CFR) *during* an epidemic is known to be inaccurate because (a) the true number of cases is unknown, and (b) many cases are still active and a proportion of those may die. We refer to the statistic often cited as the CFR for COVID-19 at present as the 'crude' CFR reflecting that it is a poor estimate of the true CFR, which can be defined by the equation,  
+The case fatality rate (CFR) *during* an epidemic is known to be inaccurate because (a) the true number of cases is unknown, and (b) many cases are still active and a proportion of those may die. We refer to the statistic often cited as the CFR for COVID-19 at present as the 'naive' CFR reflecting that it is an unsophisticated estimate of the true CFR, which can be defined by the equation,  
 
 \[CFR = \frac{deaths + \widehat{\omega}(active \ cases)}{deaths + recoveries + active \ cases}\]
 
-where $\widehat{\omega}$ is the unknown proportion of active cases which will resolve by death (a **numerator** error). At the end of the epidemic, the number of active cases becomes zero and we are left with $\frac{deaths}{(deaths + recoveries)}$.  
+where $\widehat{\omega} \in [0,1]$ is the unknown proportion of active cases which will resolve by death (a **numerator** error). At the end of the epidemic, the number of active cases becomes zero and we are left with $\frac{deaths}{(deaths + recoveries)}$.  
 
-In addition, because the number of undetected cases is unknown we have a **denominator** error. This has been widely reported, but without much regard for the interplay between the numerator and denominator errors. At this stage we don't know what the likely numerator or denominator errors are, although the proportion of active cases which will not recover is probably smaller than the crude CFR because time to death is less than time to recovery. My feeling, contrary to popular opinion, is that crude CFR may in fact *underestimate* CFR for COVID-19 at this stage, and in this vignette I will attempt to show (graphically) why I believe this to be the case.  
+In addition, because the number of undetected cases is unknown we have a **denominator** error. This has been widely reported, but without much regard for the interplay between the numerator and denominator errors. At this stage we don't know what the magnitude of the likely numerator or denominator errors are, although the proportion of active cases which will not recover is probably smaller than the naive CFR because time to death is less than time to recovery. My feeling, contrary to popular opinion, is that naive CFR may in fact *underestimate* CFR for COVID-19 at this stage, and in this vignette I will attempt to show (graphically) why I believe this to be the case.  
 
 For simplicity we will not consider conditional estimates of CFR (age, comorbidity, or the capacity of different regions to respond with life-saving acute care).  
 
@@ -38,7 +25,10 @@ Our model of CFR is,
 
 \[CFR = \frac{deaths + \widehat{\omega}*(active \ cases)}{total \ cases \ detected + \widehat{\rho}*(total \ cases \ detected)}\]  
 
-where $\widehat{\rho} \in [0,1]$ is the proportion of total cases that are assumed to be undetected at the current time and $\widehat{\omega} \in [0,1]$ is the proportion of active cases at the current time that will not recover.  
+where $\widehat{\rho} \in [0,1]$ is the proportion of total cases that are assumed to be undetected at the current time and $\widehat{\omega} \in [0,1]$ is the proportion of active and detected cases at the current time that will not recover (making the simplifying, conservative assumption that because the undetected cases are asymptomatic or mild, the patient is unlikely to die).  
+
+We will use total cases, recoveries, and deaths as of 13th March 2020 to provide context.  
+
 
 ```{r}
 cfr <- function(w_hat, deaths, recoveries, active_cases, p_uncounted = 0){
@@ -47,10 +37,10 @@ cfr <- function(w_hat, deaths, recoveries, active_cases, p_uncounted = 0){
 
 ```
 
-```{r}
+```{r echo = TRUE}
 # total cases 13/3/20 = 134748
 # active cases = 59382 (.4407 x total cases)
-d <- expand.grid(w_hat = seq(0, 0.1, by = .01),
+d <- expand.grid(w_hat = seq(0, 0.06, by = .01),
                  active_cases = 59382,
                  deaths = 4983,
                  recoveries = 70383,
@@ -62,34 +52,35 @@ d$cfr <- cfr(w_hat = d$w_hat,
              recoveries = d$recoveries,
              p_uncounted = d$p_uncounted)
 
-ccfr <- 4983/134748
-
-d$prop_deaths_unaccounted <- d$cfr/ccfr-1
+crude_cfr <- 4983/134748
 
 ```
 
-```{r}
+```{r echo = FALSE}
+xs <- .062
 ggplot(d, aes(y = cfr, x = w_hat,
               colour = factor(p_uncounted),
               group = factor(p_uncounted))) +
   geom_line(size = 1) + 
-  geom_hline(yintercept = 4983/134748, linetype = 'dashed',
+  geom_hline(yintercept = crude_cfr, linetype = 'dashed',
              colour = 'firebrick') +
-  annotate("text", x = .105, y = .082, label = "0%", size = 3.5) +
-    annotate("text", x = .105, y = .078, label = "5%", size = 3.5) +
-    annotate("text", x = .105, y = .074, label = "10%", size = 3.5) +
-  annotate("text", x = .105, y = .068, label = "20%", size = 3.5) +
-    annotate("text", x = .105, y = .054, label = "50%", size = 3.5) +
-  annotate("text", x = .095, y = .045, label = "Undetected (% of cases)", size = 3) +
-  annotate("text", x = .065, y = .035, label = "Crude CFR (13 March)",
+  annotate("text", x = xs, y = .0635, label = "0%", size = 3.5) +
+    annotate("text", x = xs, y = .061, label = "5%", size = 3.5) +
+    annotate("text", x = xs, y = .058, label = "10%", size = 3.5) +
+  annotate("text", x = xs, y = .053, label = "20%", size = 3.5) +
+    annotate("text", x = xs, y = .043, label = "50%", size = 3.5) +
+  annotate("text", x = .056, y = .0475, label = "Undetected (% of cases)", size = 3) +
+  annotate("text", x = .051, y = .036, label = "'Naive' CFR (13 March)",
            size = 3, colour = "firebrick") +
-  ylab("Case fatality ratio") +
-  xlab("Proportion of active cases that do not recover") +
+  ylab("Case fatality ratio (%)") +
+  xlab("Active cases that will not recover (%)") +
   guides(colour = FALSE) +
   scico::scale_color_scico_d(palette = "hawaii", end = 0.9) +
-  scale_x_continuous(breaks = c(0, .02, .04, .06, .08, .1)) +
-  scale_y_continuous(breaks = c(.01, .02, .03, .04, .05, .06, .07, .08)) +
-  annotate("text", x = 0.1, y = .025, label = "(C) Bindoff, A.",
+  scale_x_continuous(breaks = seq(0, .06, by = .01), 
+                     labels = paste(seq(0, .06, by = .01)*100, "%")) +
+  scale_y_continuous(breaks = seq(0.02, 0.07, by = 0.01),
+                     labels = paste(seq(0.02, 0.07, by = .01)*100, "%")) +
+  annotate("text", x = 0.05, y = .021, label = "source: https://github.com/ABindoff/cfr_covid19",
            size = 2.5)
 
 
