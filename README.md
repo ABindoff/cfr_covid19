@@ -46,6 +46,12 @@ estimates of CFR (age, comorbidity, or the capacity of different regions
 to respond with life-saving acute care).
 
 ``` r
+cfr <- function(w_hat, deaths, recoveries, active_cases, p_uncounted = 0){
+  (deaths + w_hat*active_cases)/((deaths + recoveries + active_cases) + (p_uncounted*(deaths + recoveries + active_cases)))
+}
+```
+
+``` r
 # total cases 13/3/20 = 134748
 # active cases = 59382 (.4407 x total cases)
 
@@ -62,10 +68,32 @@ d$cfr <- cfr(w_hat = d$w_hat,
              deaths = d$deaths, 
              recoveries = d$recoveries,
              p_uncounted = d$p_uncounted)
-d$cfr0 <- d$cfr
-d$cfr[d$w_hat ==.03] <- NA
-
-crude_cfr <- 4983/134748
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+Using the same number of global deaths (4983) and recoveries (70383) as
+of 13th March 2020, we show how these intercepts and slopes change if
+20%, 44.1% and 80% of all detected cases were currently active.
+
+``` r
+# total cases 13/3/20 = 134748
+# active cases = 59382 (.4407 x total cases)
+
+d <- expand.grid(w_hat = c(0, .028, .03, .032, .06),
+                 active_cases = floor(c(-.2*(4983+70383)/(.2-1), 59382, -.8*(4983+70383)/(.8-1))),
+                 deaths = 4983,
+                 recoveries = 70383,
+                 p_uncounted = c(0, .10, .2, .50, 1, 2, 3))
+
+
+
+d$cfr <- cfr(w_hat = d$w_hat,
+             active_cases = d$active_cases,
+             deaths = d$deaths, 
+             recoveries = d$recoveries,
+             p_uncounted = d$p_uncounted)
+d$cfr0 <- d$deaths/(d$deaths+d$recoveries+d$active_cases)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->

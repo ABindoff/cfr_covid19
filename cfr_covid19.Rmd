@@ -52,6 +52,9 @@ d$cfr <- cfr(w_hat = d$w_hat,
              deaths = d$deaths, 
              recoveries = d$recoveries,
              p_uncounted = d$p_uncounted)
+```
+
+```{r}
 d$cfr0 <- d$cfr
 d$cfr[d$w_hat ==.03] <- NA
 
@@ -91,6 +94,51 @@ ggplot(d, aes(y = cfr, x = w_hat,
                      labels = paste(seq(0.0, 0.07, by = .01)*100, "%"), limits = c(0, .07)) +
   annotate("text", x = 0.045, y = .0, label = "source: https://github.com/ABindoff/cfr_covid19",
            size = 2.5)
+
+
+```
+
+Using the same number of global deaths (4983) and recoveries (70383) as of 13th March 2020, we show how these intercepts and slopes change if 20%, 44.1% and 80% of all detected cases were currently active.  
+
+
+```{r echo = TRUE}
+# total cases 13/3/20 = 134748
+# active cases = 59382 (.4407 x total cases)
+
+d <- expand.grid(w_hat = c(0, .028, .03, .032, .06),
+                 active_cases = floor(c(-.2*(4983+70383)/(.2-1), 59382, -.8*(4983+70383)/(.8-1))),
+                 deaths = 4983,
+                 recoveries = 70383,
+                 p_uncounted = c(0, .10, .2, .50, 1, 2, 3))
+
+
+
+d$cfr <- cfr(w_hat = d$w_hat,
+             active_cases = d$active_cases,
+             deaths = d$deaths, 
+             recoveries = d$recoveries,
+             p_uncounted = d$p_uncounted)
+d$cfr0 <- d$deaths/(d$deaths+d$recoveries+d$active_cases)
+
+```
+
+```{r echo = FALSE}
+xs <- .03
+ys <- d$cfr0[d$w_hat == .03]
+ggplot(d, aes(y = cfr, x = w_hat,
+              colour = factor(p_uncounted),
+              group = factor(p_uncounted))) +
+  geom_line(size = 1) + 
+  geom_hline(data = d, aes(yintercept = cfr0), linetype = 'dashed',
+             colour = 'firebrick') +
+  ylab("Case fatality ratio (%)") +
+  xlab("Active cases that will not recover (%)") +
+  scico::scale_color_scico_d(palette = "hawaii", end = 0.9, name = "Undetected (%)", labels = c("0%", "10%", "20%", "50%", "100%", "200%", "300%")) +
+  scale_x_continuous(breaks = seq(0, .06, by = .01), 
+                     labels = paste(seq(0, .06, by = .01)*100, "%")) +
+  scale_y_continuous(breaks = seq(0.0, 0.07, by = 0.01),
+                     labels = paste(seq(0.0, 0.07, by = .01)*100, "%"), limits = c(0, .07)) +
+   facet_wrap(~active_cases)
 
 
 ```
