@@ -38,10 +38,12 @@ not recover (making the simplifying, conservative assumption that
 because the undetected cases are asymptomatic or mild, the patient is
 unlikely to die).
 
-We will use total cases, recoveries, and deaths as of 13th March 2020 to
-provide context. For simplicity we will not consider conditional
-estimates of CFR (age, comorbidity, or the capacity of different regions
-to respond with life-saving acute care).
+We will use total cases, recoveries, and deaths as of 17th March 2020
+for **Germany** to provide context. These data are simply transcribed
+from <https://www.worldometers.info/coronavirus/> (accessed 10:54AM AEST
+17-3-20). For simplicity we will not consider conditional estimates of
+CFR (age, comorbidity, or the capacity of different regions to respond
+with life-saving acute care).
 
 ``` r
 cfr <- function(w_hat, deaths, recoveries, active_cases, p_uncounted = 0){

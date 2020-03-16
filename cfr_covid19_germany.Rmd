@@ -2,7 +2,7 @@
 title: "Errors in calculating CFR for COVID-19 - Germany (DE)"
 author: "Bindoff, A."
 date: "17/03/2020"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -25,7 +25,7 @@ Our model of CFR is,
 
 where $\rho \geq 0$ is the proportion of total cases that are assumed to be undetected at the current time and $\omega \in [0,1]$ is the proportion of active (and detected) cases at the current time that will not recover (making the simplifying, conservative assumption that because the undetected cases are asymptomatic or mild, the patient is unlikely to die).  
 
-We will use total cases, recoveries, and deaths as of 13th March 2020 to provide context. For simplicity we will not consider conditional estimates of CFR (age, comorbidity, or the capacity of different regions to respond with life-saving acute care).  
+We will use total cases, recoveries, and deaths as of 17th March 2020 for **Germany** to provide context. These data are simply transcribed from https://www.worldometers.info/coronavirus/ (accessed 10:54AM AEST 17-3-20).  For simplicity we will not consider conditional estimates of CFR (age, comorbidity, or the capacity of different regions to respond with life-saving acute care).  
 
 
 ```{r}
@@ -82,8 +82,8 @@ ggplot(d, aes(y = cfr, x = w_hat,
     annotate("text", x = .03, y = .038, 
              label = "Undetected (% of cases)",
              size = 3,
-             angle = 26) +
-  annotate("text", x = .051, y = 17/7272, label = "'Naive' CFR (13 March)",
+             angle = 28) +
+  annotate("text", x = .051, y = 0, label = "'Naive' CFR (13 March)",
            size = 3, colour = "firebrick") +
   ylab("Case fatality ratio (%)") +
   xlab("Active cases that will not recover (%)") +
@@ -93,8 +93,10 @@ ggplot(d, aes(y = cfr, x = w_hat,
                      labels = paste(seq(0, .06, by = .01)*100, "%")) +
   scale_y_continuous(breaks = seq(0.0, 0.07, by = 0.01),
                      labels = paste(seq(0.0, 0.07, by = .01)*100, "%"), limits = c(0, .07)) +
-  annotate("text", x = 0.045, y = .0, label = "source: https://github.com/ABindoff/cfr_covid19",
-           size = 2.5)
+  annotate("text", x = 0.015, y = .055, label = "source: https://github.com/ABindoff/cfr_covid19",
+           size = 2.5) +
+  annotate("text", x = .01, y = .065, label = "Germany 17th March") +
+  annotate("text", x = .025, y = 0.06, label = "estimating CFR from naive CFR over range of numerator/denominator assumptions", size = 2.5)
 
 
 ```
