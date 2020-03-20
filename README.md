@@ -10,7 +10,7 @@ the statistic often cited as the CFR for COVID-19 at present as the
 ‘naive’ CFR reflecting that it is an unsophisticated estimate of the
 true CFR, which can be defined by the equation,
 
-CFR = (deaths + w\*cases)/(total deaths)
+CFR = (deaths + w\*cases)/(total cases)
 
 where w is the (unknown) proportion of active cases which will resolve
 by death (a **numerator** error). At the end of the epidemic, the number
@@ -97,3 +97,7 @@ d$cfr0 <- d$deaths/(d$deaths+d$recoveries+d$active_cases)
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+This is only useful to illustrate why the naive CFR jumps around so much
+in the early stages of an epidemic, when the proportion of active cases
+is high.
