@@ -1,7 +1,7 @@
 Errors in calculating CFR for COVID-19 - Germany (DE)
 ================
 Bindoff, A.
-17/03/2020
+26/03/2020
 
 The case fatality rate (CFR) *during* an epidemic is known to be
 inaccurate because (a) the true number of cases is unknown, and (b) many
@@ -38,10 +38,10 @@ not recover (making the simplifying, conservative assumption that
 because the undetected cases are asymptomatic or mild, the patient is
 unlikely to die).
 
-We will use total cases, recoveries, and deaths as of 17th March 2020
+We will use total cases, recoveries, and deaths as of 26th March 2020
 for **Germany** to provide context. These data are simply transcribed
-from <https://www.worldometers.info/coronavirus/> (accessed 10:54AM AEST
-17-3-20). For simplicity we will not consider conditional estimates of
+from <https://www.worldometers.info/coronavirus/> (accessed 13:04PM AEST
+26-3-20). For simplicity we will not consider conditional estimates of
 CFR (age, comorbidity, or the capacity of different regions to respond
 with life-saving acute care).
 
@@ -56,9 +56,9 @@ cfr <- function(w_hat, deaths, recoveries, active_cases, p_uncounted = 0){
 # active cases = 7188
 
 d <- expand.grid(w_hat = c(0, .028, .03, .032, .06),
-                 active_cases = 7188,
-                 deaths = 17,
-                 recoveries = 67,
+                 active_cases = 33570,
+                 deaths = 206,
+                 recoveries = 3547,
                  p_uncounted = c(0, .10, .2, .50, 1, 2, 3, 5))
 
 
@@ -74,7 +74,7 @@ d$cfr <- cfr(w_hat = d$w_hat,
 d$cfr0 <- d$cfr
 d$cfr[d$w_hat ==.03] <- NA
 
-crude_cfr <- 17/7272
+crude_cfr <- 206/37323
 ```
 
 ![](cfr_covid19_germany_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->

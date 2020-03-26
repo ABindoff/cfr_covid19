@@ -1,7 +1,7 @@
 ---
 title: "Errors in calculating CFR for COVID-19 - Germany (DE)"
 author: "Bindoff, A."
-date: "17/03/2020"
+date: "26/03/2020"
 output: github_document
 ---
 
@@ -25,7 +25,7 @@ Our model of CFR is,
 
 where $\rho \geq 0$ is the proportion of total cases that are assumed to be undetected at the current time and $\omega \in [0,1]$ is the proportion of active (and detected) cases at the current time that will not recover (making the simplifying, conservative assumption that because the undetected cases are asymptomatic or mild, the patient is unlikely to die).  
 
-We will use total cases, recoveries, and deaths as of 17th March 2020 for **Germany** to provide context. These data are simply transcribed from https://www.worldometers.info/coronavirus/ (accessed 10:54AM AEST 17-3-20).  For simplicity we will not consider conditional estimates of CFR (age, comorbidity, or the capacity of different regions to respond with life-saving acute care).  
+We will use total cases, recoveries, and deaths as of 26th March 2020 for **Germany** to provide context. These data are simply transcribed from https://www.worldometers.info/coronavirus/ (accessed 13:04PM AEST 26-3-20).  For simplicity we will not consider conditional estimates of CFR (age, comorbidity, or the capacity of different regions to respond with life-saving acute care).  
 
 
 ```{r}
@@ -40,9 +40,9 @@ cfr <- function(w_hat, deaths, recoveries, active_cases, p_uncounted = 0){
 # active cases = 7188
 
 d <- expand.grid(w_hat = c(0, .028, .03, .032, .06),
-                 active_cases = 7188,
-                 deaths = 17,
-                 recoveries = 67,
+                 active_cases = 33570,
+                 deaths = 206,
+                 recoveries = 3547,
                  p_uncounted = c(0, .10, .2, .50, 1, 2, 3, 5))
 
 
@@ -58,7 +58,7 @@ d$cfr <- cfr(w_hat = d$w_hat,
 d$cfr0 <- d$cfr
 d$cfr[d$w_hat ==.03] <- NA
 
-crude_cfr <- 17/7272
+crude_cfr <- 206/37323
 
 ```
 
@@ -83,7 +83,7 @@ ggplot(d, aes(y = cfr, x = w_hat,
              label = "Undetected (% of cases)",
              size = 3,
              angle = 28) +
-  annotate("text", x = .051, y = 0, label = "'Naive' CFR (13 March)",
+  annotate("text", x = .051, y = 0, label = "'Naive' CFR (26 March)",
            size = 3, colour = "firebrick") +
   ylab("Case fatality ratio (%)") +
   xlab("Active cases that will not recover (%)") +
@@ -95,7 +95,7 @@ ggplot(d, aes(y = cfr, x = w_hat,
                      labels = paste(seq(0.0, 0.07, by = .01)*100, "%"), limits = c(0, .07)) +
   annotate("text", x = 0.015, y = .055, label = "source: https://github.com/ABindoff/cfr_covid19",
            size = 2.5) +
-  annotate("text", x = .01, y = .065, label = "Germany 17th March") +
+  annotate("text", x = .01, y = .065, label = "Germany 26th March") +
   annotate("text", x = .025, y = 0.06, label = "estimating CFR from naive CFR over range of numerator/denominator assumptions", size = 2.5)
 
 
